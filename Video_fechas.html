@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario de Eventos - Club Out & 100% Zuidoost</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;700&display=swap');
+
+        :root {
+            --primary: #22c55e; /* Verde Esmeralda */
+            --bg-dark: #000000;
+            --card-bg: #0c0c0c;
+            --text-main: #ffffff;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark);
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            font-family: 'Montserrat', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* Dimensiones actualizadas: 800px x 3000px */
+        .flyer-container {
+            width: 800px;
+            height: 3000px; 
+            background-color: var(--bg-dark);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: none;
+        }
+
+        /* Degradado de fondo */
+        .bg-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 0% 0%, rgba(34, 197, 94, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 100% 100%, rgba(34, 197, 94, 0.08) 0%, transparent 45%);
+            z-index: 1;
+        }
+
+        .event-list {
+            position: relative;
+            z-index: 10;
+            padding: 40px 30px 80px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .event-card {
+            background-color: var(--card-bg);
+            border-left: 8px solid var(--primary);
+            margin-bottom: 15px;
+            padding: 18px 25px;
+            display: flex;
+            align-items: center;
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.7);
+            flex-shrink: 0;
+            /* Preparación para animación */
+            opacity: 0; 
+            transform: translateX(-50px);
+            transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Clase activa para mostrar la tarjeta */
+        .event-card.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        /* Clase de salida */
+        .event-card.hiding {
+            opacity: 0;
+            transform: translateX(30px);
+            transition: opacity 0.5s ease-in, transform 0.5s ease-in;
+        }
+
+        .event-card.special {
+            background: linear-gradient(90deg, #06200f, #0c0c0c);
+            border-left-color: #ffffff;
+        }
+
+        .date-box {
+            min-width: 140px;
+            text-align: center;
+            border-right: 3px solid #222;
+            margin-right: 25px;
+            padding-right: 10px;
+        }
+
+        .date-day {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 60px;
+            color: var(--text-main);
+            display: block;
+            line-height: 0.9;
+        }
+
+        .date-month {
+            font-size: 18px;
+            color: var(--primary);
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 3px;
+        }
+
+        .event-info {
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .event-title {
+            font-weight: 700;
+            color: var(--text-main);
+            font-size: 26px;
+            line-height: 1.1;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            word-wrap: break-word;
+        }
+
+        .event-title.long {
+            font-size: 30px;
+        }
+
+        .venue {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #aaa;
+            font-size: 30px;
+            margin-top: 6px;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .venue strong {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .month-divider {
+            color: #ffffff;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 55px;
+            letter-spacing: 6px;
+            display: flex;
+            align-items: center;
+            margin: 20px 0 20px 0;
+            text-transform: uppercase;
+            border-bottom: 4px solid var(--primary);
+            padding-bottom: 5px;
+            flex-shrink: 0;
+            /* Preparación para animación */
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .month-divider.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .month-divider.hiding {
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.5s ease-in, transform 0.5s ease-in;
+        }
+
+        .month-divider::after {
+            content: "";
+            flex-grow: 1;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), transparent);
+            margin-left: 25px;
+        }
+
+        .top-glow {
+            width: 100%;
+            height: 6px;
+            background: var(--primary);
+            position: absolute;
+            top: 0;
+            z-index: 20;
+            box-shadow: 0 0 25px var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="flyer-container">
+        <div class="top-glow"></div>
+        <div class="bg-overlay"></div>
+        
+        <div class="event-list" id="eventList">
+            <div class="month-divider">Diciembre</div>
+
+            <div class="event-card">
+                <div class="date-box"><span class="date-day">SAB 06</span><span class="date-month">Dic</span></div>
+                <div class="event-info"><div class="event-title">RUMBA LATINA</div><div class="venue"><strong>CLUB OUT</strong> (AMSTERDAM)</div></div>
+            </div>
+
+            <div class="event-card">
+                <div class="date-box"><span class="date-day">DOM 07</span><span class="date-month">Dic</span></div>
+                <div class="event-info"><div class="event-title">DOMINGO DE MATINE</div><div class="venue"><strong>100% ZUIDOOST</strong> (AMSTERDAM)</div></div>
+            </div>
+
+            <div class="event-card">
+                <div class="date-box"><span class="date-day">DOM 07</span><span class="date-month">Dic</span></div>
+                <div class="event-info"><div class="event-title long">EL VACILON DE LOS DOMINGOS</div><div class="venue"><strong>CLUB OUT</strong> (AMSTERDAM)</div></div>
+            </div>
+
+            <div class="event-card special">
+                <div class="date-box"><span class="date-day">VIE 12</span><span class="date-month">Dic</span></div>
+                <div class="event-info"><div class="event-title">CUMPLEAÑOS DJ ACHA</div><div class="venue"><strong>CLUB OUT</strong> (AMSTERDAM)</div></div>
+            </div>
+
+            <div class="event-card">
+                <div class="date-box"><span class="date-day">SAB 13</span><span class="date-month">Dic</span></div>
+                <div class="event-info"><div class="event-title">RUMBA LATINA</div><div class="venue"><strong>CLUB OUT</strong> (AMSTERDAM)</div></div>
+            </div>
+
+            <div class="event-card">
+                <div class="date-box"><span class="date-day">DOM 14</span><span class="date-month">Dic</span></div>
+                <div class="event-info"><div class="event-title">DOMINGO DE MATINE</div><div class="venue"><strong>100% ZUIDOOST</strong> (AMSTERDAM)</div></div>
+            </div>
+
+            <div class="event-card special">
+                <div class="date-box"><span class="date-day">DOM 14</span><span class="date-month">Dic</span></div>
+                <div class="event-info"><div class="event-title">CUMPLEAÑOS DE LAMARTI</div><div class="venue"><strong>CLUB OUT</strong> (AMSTERDAM)</div></div>
+            </div>
+
+            <div class="event-card special">
+                <div class="date-box"><span class="date-day">SAB 20</span><span class="date-month">Dic</span></div>
+                <div class="event-info"><div class="event-title">CUMPLEAÑOS DE NINI’S</div><div class="venue"><strong>CLUB OUT</strong> (AMSTERDAM)</div></div>
+            </div>
+
+            <div class="event-card">
+                <div class="date-box"><span class="date-day">DOM 21</span><span class="date-month">Dic</span></div>
+                <div class="event-info"><div class="event-title">DOMINGO DE MATINE</div><div class="venue"><strong>100% ZUIDOOST</strong> (AMSTERDAM)</div></div>
+            </div>
+
+            <div class="event-card">
+                <div class="date-box"><span class="date-day">DOM 21</span><span class="date-month">Dic</span></div>
+                <div class="event-info"><div class="event-title long">EL VACILON DE LOS DOMINGOS</div><div class="venue"><strong>CLUB OUT</strong> (AMSTERDAM)</div></div>
+            </div>
+
+            <div class="event-card special">
+                <div class="date-box"><span class="date-day">JUE 25</span><span class="date-month">Dic</span></div>
+                <div class="event-info"><div class="event-title">RUMBA NAVIDEÑA</div><div class="venue"><strong>CLUB OUT</strong> (AMSTERDAM)</div></div>
+            </div>
+
+            <div class="event-card special">
+                <div class="date-box"><span class="date-day">VIE 26</span><span class="date-month">Dic</span></div>
+                <div class="event-info"><div class="event-title long">CUMPLEAÑOS DE DJ SOSA’S</div><div class="venue"><strong>CLUB OUT</strong> (AMSTERDAM)</div></div>
+            </div>
+
+            <div class="event-card">
+                <div class="date-box"><span class="date-day">SAB 27</span><span class="date-month">Dic</span></div>
+                <div class="event-info"><div class="event-title">RUMBA LATINA</div><div class="venue"><strong>CLUB OUT</strong> (AMSTERDAM)</div></div>
+            </div>
+
+            <div class="event-card">
+                <div class="date-box"><span class="date-day">DOM 28</span><span class="date-month">Dic</span></div>
+                <div class="event-info"><div class="event-title">BINGO MILLONARIO</div><div class="venue"><strong>100% ZUIDOOST</strong> (AMSTERDAM)</div></div>
+            </div>
+
+            <div class="event-card">
+                <div class="date-box"><span class="date-day">DOM 28</span><span class="date-month">Dic</span></div>
+                <div class="event-info"><div class="event-title long">EL VACILON DE LOS DOMINGOS</div><div class="venue"><strong>CLUB OUT</strong> (AMSTERDAM)</div></div>
+            </div>
+
+            <div class="event-card special">
+                <div class="date-box"><span class="date-day">MAR 30</span><span class="date-month">Dic</span></div>
+                <div class="event-info"><div class="event-title">PRE - AÑO NUEVO</div><div class="venue"><strong>CLUB OUT</strong> (AMSTERDAM)</div></div>
+            </div>
+
+            <div class="event-card special">
+                <div class="date-box"><span class="date-day">MIE 31</span><span class="date-month">Dic</span></div>
+                <div class="event-info"><div class="event-title">FIESTA DE FIN DE AÑO</div><div class="venue"><strong>CLUB OUT</strong> (AMSTERDAM)</div></div>
+            </div>
+
+            <div class="month-divider">Enero</div>
+
+            <div class="event-card">
+                <div class="date-box"><span class="date-day">SAB 03</span><span class="date-month">Ene</span></div>
+                <div class="event-info"><div class="event-title">RUMBA LATINA</div><div class="venue"><strong>CLUB OUT</strong> (AMSTERDAM)</div></div>
+            </div>
+
+            <div class="event-card">
+                <div class="date-box"><span class="date-day">DOM 04</span><span class="date-month">Ene</span></div>
+                <div class="event-info"><div class="event-title long">EL VACILON DE LOS DOMINGOS</div><div class="venue"><strong>CLUB OUT</strong> (AMSTERDAM)</div></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('eventList');
+            // Selecciona todos los elementos a animar
+            const items = container.querySelectorAll('.event-card, .month-divider');
+            
+            function runAnimationCycle() {
+                // 1. Fase de Entrada (Staggered)
+                items.forEach((item, index) => {
+                    // Limpiar clases previas
+                    item.classList.remove('hiding');
+                    
+                    // Retardo para efecto cascada
+                    setTimeout(() => {
+                        item.classList.add('visible');
+                    }, index * 100); // 100ms entre cada elemento
+                });
+
+                // Calcular cuánto tarda en terminar de entrar el último elemento
+                const totalEntranceTime = items.length * 100 + 600; // +600ms duración de transición css
+                
+                // 2. Fase de Pausa (4 segundos después de que todos entraron)
+                setTimeout(() => {
+                    // Iniciar salida
+                    startExit();
+                }, totalEntranceTime + 4000); // Espera entrada + 4s
+            }
+
+            function startExit() {
+                // 3. Fase de Salida (Fade out rápido)
+                items.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.classList.remove('visible');
+                        item.classList.add('hiding');
+                    }, index * 50); // Salida un poco más rápida (50ms)
+                });
+
+                const totalExitTime = items.length * 50 + 500;
+
+                // 4. Reiniciar ciclo
+                setTimeout(() => {
+                    // Limpiar clases para reiniciar limpio
+                    items.forEach(item => {
+                        item.classList.remove('hiding');
+                    });
+                    
+                    // Pequeña pausa antes de volver a empezar
+                    setTimeout(runAnimationCycle, 500);
+                }, totalExitTime);
+            }
+
+            // Iniciar primera vez
+            runAnimationCycle();
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: html-to-video-converter
+    env: docker
+    plan: free # Change to starter if needed
+    branch: main # Assumes main branch
+    envVars:
+      - key: PORT
+        value: 10000
