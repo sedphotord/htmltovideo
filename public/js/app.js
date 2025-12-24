@@ -181,6 +181,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } else {
             // Single Code Mode (Old Logic)
+            setLoading(true);
+            showProgress(true);
+            simulateProgress(); // Start simulated progress
+
             try {
                 const response = await fetch('/api/convert', {
                     method: 'POST',
@@ -190,25 +194,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (data.success) {
-                    statusMessage.textContent = 'Conversion Successful!';
-                    statusMessage.style.color = '#0f0';
+                    setProgress(100); // Complete
+                    setTimeout(() => {
+                        showProgress(false);
+                        statusMessage.textContent = 'Conversion Successful!';
+                        statusMessage.style.color = '#0f0';
 
-                    // Show Download Button
-                    downloadLink.href = data.downloadUrl;
-                    downloadLink.hidden = false;
-                    downloadLink.textContent = 'Download Video';
-                    downloadLink.classList.add('pulse'); // Animation hint
+                        // Show Download Button
+                        downloadLink.href = data.downloadUrl;
+                        downloadLink.hidden = false;
+                        downloadLink.textContent = 'Download Video';
+                        downloadLink.classList.add('pulse'); // Animation hint
+                    }, 500);
                 } else {
+                    showProgress(false);
                     statusMessage.textContent = 'Error: ' + data.error;
                     statusMessage.style.color = '#ff4444';
                 }
             } catch (error) {
                 console.error('Error:', error);
+                showProgress(false);
                 statusMessage.textContent = 'An error occurred during conversion.';
                 statusMessage.style.color = '#ff4444';
             } finally {
-                convertBtn.disabled = false;
-                loader.hidden = true;
+                setLoading(false);
                 if (btnText.textContent !== 'Batch Complete') btnText.textContent = 'Start Rendering';
             }
         }
