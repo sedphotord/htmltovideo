@@ -1,0 +1,12 @@
+{
+    "ownerId": "tea-d4etcae3jp1c738nrakg",
+    "type": "web_service",
+    "repo": "https://github.com/sedphotord/htmltovideo",
+    "name": "html-to-video-converter",
+    "branch": "main",
+    "serviceDetails": {
+        "env": "docker",
+        "region": "oregon",
+        "plan": "free"
+    }
+}

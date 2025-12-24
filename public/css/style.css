@@ -18,7 +18,8 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
     /* User requested 90% scale */
     zoom: 0.9;
 }
