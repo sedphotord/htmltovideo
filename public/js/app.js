@@ -193,9 +193,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data.success) {
                     statusMessage.textContent = 'Conversion Successful!';
                     statusMessage.style.color = '#0f0';
+
+                    // Show Download Button
                     downloadLink.href = data.downloadUrl;
                     downloadLink.hidden = false;
-                    downloadLink.textContent = 'Download Video'; // Reset text
+                    downloadLink.textContent = 'Download Video';
+                    downloadLink.classList.add('pulse'); // Animation hint
                 } else {
                     statusMessage.textContent = 'Error: ' + data.error;
                     statusMessage.style.color = '#ff4444';
@@ -306,7 +309,18 @@ document.addEventListener('DOMContentLoaded', () => {
     function setLoading(isLoading) {
         convertBtn.disabled = isLoading;
         loader.hidden = !isLoading;
-        btnText.textContent = isLoading ? 'Processing...' : 'Start Rendering';
+
+        if (isLoading) {
+            btnText.textContent = 'Generating Video...';
+            convertBtn.classList.add('loading-state');
+            downloadLink.hidden = true;
+            statusMessage.textContent = 'Rendering in progress, please wait...';
+            statusMessage.style.color = '#888';
+        } else {
+            btnText.textContent = 'Start Rendering';
+            convertBtn.classList.remove('loading-state');
+            // Status message handled by success/error logic
+        }
     }
 
     // Preview Logic

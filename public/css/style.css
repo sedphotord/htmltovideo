@@ -370,6 +370,36 @@ textarea:focus {
     margin-top: 15px;
     min-height: 24px;
     color: var(--text-muted);
+    font-weight: 500;
+}
+
+.convert-btn.loading-state {
+    cursor: wait;
+    opacity: 0.8;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+.download-btn.pulse {
+    animation: pulse 1.5s infinite;
+    background: #0f0;
+    /* Highlight color */
+    color: #000;
 }
 
 .download-btn {
