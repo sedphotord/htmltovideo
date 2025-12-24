@@ -10,6 +10,14 @@ const PORT = 3000;
 
 // Middleware
 app.use(cors());
+// Set Permissive CSP to prevent 'eval' blocking
+app.use((req, res, next) => {
+    res.setHeader(
+        "Content-Security-Policy",
+        "default-src 'self' * data: blob: 'unsafe-inline' 'unsafe-eval'; script-src 'self' * 'unsafe-inline' 'unsafe-eval'; style-src 'self' * 'unsafe-inline';"
+    );
+    next();
+});
 app.use(express.static('public')); // Serve frontend
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
