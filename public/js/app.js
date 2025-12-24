@@ -69,33 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const codeInput = document.getElementById('htmlCode');
         const selectorInput = document.getElementById('selector');
         const audioInput = document.getElementById('audioInput');
-        const transparentCheck = document.getElementById('transparentCheck');
         const formatInput = document.getElementById('format');
-        // const convertBtn = document.getElementById('convertBtn'); // Already declared globally
-        // const statusMessage = document.getElementById('statusMessage'); // Already declared globally
-        // const downloadLink = document.getElementById('downloadLink'); // Already declared globally
-
-        const formData = new FormData();
-
-        // Validation
-        if (activeTab === 'upload') {
-            if (!fileInput.files[0]) {
-                alert('Please upload a file!');
-                statusMessage.textContent = 'Please select a file first.';
-                statusMessage.style.color = '#ff4444';
-                return;
-            }
-            formData.append('htmlFile', fileInput.files[0]);
-        } else { // activeTab === 'code'
-            const code = codeInput.value;
-            if (!code.trim()) {
-                alert('Please paste some HTML code!');
-                statusMessage.textContent = 'Please enter HTML code.';
-                statusMessage.style.color = '#ff4444';
-                return;
-            }
-            formData.append('htmlCode', code);
-        }
+        const isTransparent = formatInput.value === 'webm'; // Auto-detect transparency from format
 
         // Settings
         formData.append('fps', fpsInput.value);
@@ -103,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('width', widthInput.value);
         formData.append('height', heightInput.value);
         formData.append('selector', selectorInput.value);
-        formData.append('transparent', transparentCheck.checked);
+        formData.append('transparent', isTransparent);
         formData.append('format', formatInput.value);
 
         // Inject Variables
@@ -144,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 batchData.append('width', widthInput.value);
                 batchData.append('height', heightInput.value);
                 batchData.append('selector', selectorInput.value);
-                batchData.append('transparent', transparentCheck.checked);
+                batchData.append('transparent', formatInput.value === 'webm');
                 batchData.append('format', formatInput.value);
                 if (Object.keys(currentVariables).length > 0) {
                     batchData.append('variables', JSON.stringify(currentVariables));
