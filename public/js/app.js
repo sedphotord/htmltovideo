@@ -53,7 +53,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function handleFile(file) {
         if (file.name.endsWith('.html') || file.name.endsWith('.htm')) {
             selectedFile = file;
-            fileNameDisplay.textContent = `Selected: ${file.name}`;
+            if (fileNameDisplay) {
+                fileNameDisplay.textContent = `Selected: ${file.name}`;
+            }
         } else {
             alert('Please select a valid HTML file.');
         }
