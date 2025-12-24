@@ -74,6 +74,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const formatInput = document.getElementById('format');
         const isTransparent = formatInput.value === 'webm'; // Auto-detect transparency from format
 
+        const formData = new FormData();
+
+        // Validation
+        if (activeTab === 'upload') {
+            if (!fileInput.files[0]) {
+                alert('Please upload a file!');
+                statusMessage.textContent = 'Please select a file first.';
+                statusMessage.style.color = '#ff4444';
+                return;
+            }
+            formData.append('htmlFile', fileInput.files[0]);
+        } else { // activeTab === 'code'
+            const code = codeInput.value;
+            if (!code.trim()) {
+                alert('Please paste some HTML code!');
+                statusMessage.textContent = 'Please enter HTML code.';
+                statusMessage.style.color = '#ff4444';
+                return;
+            }
+            formData.append('htmlCode', code);
+        }
+
         // Settings
         formData.append('fps', fpsInput.value);
         formData.append('duration', durationInput.value);
